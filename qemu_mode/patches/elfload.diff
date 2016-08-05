@@ -1,5 +1,5 @@
---- qemu-2.3.0/linux-user/elfload.c.orig	2014-12-09 14:45:42.000000000 +0000
-+++ qemu-2.3.0/linux-user/elfload.c	2015-01-28 02:51:23.719000000 +0000
+--- qemu-2.3.0/cgc-user/elfload.c.orig	2014-12-09 14:45:42.000000000 +0000
++++ qemu-2.3.0/cgc-user/elfload.c	2015-01-28 02:51:23.719000000 +0000
 @@ -28,6 +28,8 @@
  
  #define ELF_OSABI   ELFOSABI_SYSV

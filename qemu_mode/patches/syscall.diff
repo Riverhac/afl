@@ -1,6 +1,6 @@
---- qemu-2.3.0/linux-user/syscall.c.orig	2014-12-09 14:45:43.000000000 +0000
-+++ qemu-2.3.0/linux-user/syscall.c	2015-03-27 06:33:00.736000000 +0000
-@@ -227,7 +227,21 @@
+--- qemu-2.3.0/cgc-user/syscall.c.orig	2014-12-09 14:45:43.000000000 +0000
++++ qemu-2.3.0/cgc-user/syscall.c	2015-03-27 06:33:00.736000000 +0000
+@@ -227,7 +227,23 @@
  _syscall3(int,sys_rt_sigqueueinfo,int,pid,int,sig,siginfo_t *,uinfo)
  _syscall3(int,sys_syslog,int,type,char*,bufp,int,len)
  #if defined(TARGET_NR_tgkill) && defined(__NR_tgkill)
@@ -8,6 +8,7 @@
 +
 +extern unsigned int afl_forksrv_pid;
 +
++#ifdef __NR_sys_tgkill
 +static int sys_tgkill(int tgid, int pid, int sig) {
 +
 +  /* Workaround for -lpthread to make abort() work properly, without
@@ -19,6 +20,7 @@
 +  return syscall(__NR_sys_tgkill, pid, tgid, sig);
 +
 +}
++#endif
 +
  #endif
  #if defined(TARGET_NR_tkill) && defined(__NR_tkill)

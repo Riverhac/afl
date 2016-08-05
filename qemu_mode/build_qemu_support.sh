@@ -83,6 +83,7 @@ fi
 
 echo "[+] All checks passed!"
 
+: '
 ARCHIVE="`basename -- "$QEMU_URL"`"
 
 CKSUM=`sha384sum -- "$ARCHIVE" 2>/dev/null | cut -d' ' -f1`
@@ -114,6 +115,7 @@ rm -rf "qemu-2.3.0" || exit 1
 tar xf "$ARCHIVE" || exit 1
 
 echo "[+] Unpacking successful."
+'
 
 echo "[*] Applying patches..."
 
@@ -128,14 +130,15 @@ ORIG_CPU_TARGET="$CPU_TARGET"
 
 test "$CPU_TARGET" = "" && CPU_TARGET="`uname -m`"
 test "$CPU_TARGET" = "i686" && CPU_TARGET="i386"
+CPU_TARGET="i386"
 
 echo "[*] Configuring QEMU for $CPU_TARGET..."
 
 cd qemu-2.3.0 || exit 1
 
-CFLAGS="-O3" ./configure --disable-system --enable-linux-user \
+CFLAGS="-O3" ./configure --disable-system --enable-cgc-user \
   --enable-guest-base --disable-gtk --disable-sdl --disable-vnc \
-  --target-list="${CPU_TARGET}-linux-user" || exit 1
+  --target-list="${CPU_TARGET}-cgc-user" || exit 1
 
 echo "[+] Configuration complete."
 
@@ -147,20 +150,21 @@ echo "[+] Build process successful!"
 
 echo "[*] Copying binary..."
 
-cp -f "${CPU_TARGET}-linux-user/qemu-${CPU_TARGET}" "../../afl-qemu-trace" || exit 1
+cp -f "${CPU_TARGET}-cgc-user/qemu-${CPU_TARGET}" "../../afl-qemu-trace" || exit 1
 
 cd ..
 ls -l ../afl-qemu-trace || exit 1
 
 echo "[+] Successfully created '../afl-qemu-trace'."
 
+ORIG_CPU_TARGET="cgc"
 if [ "$ORIG_CPU_TARGET" = "" ]; then
 
   echo "[*] Testing the build..."
 
   cd ..
 
-  make >/dev/null || exit 1
+  CFLAGS=-fPIC make >/dev/null || exit 1
 
   gcc test-instr.c -o test-instr || exit 1
 
